@@ -9,12 +9,12 @@ export const POST = async (req) => {
         const { nom, prenom, email, password } = await req.json()
 
         if(!nom || !prenom || !email || !password) {
-            return NextResponse.json({ message: "Tous les champs sont obligatoires." }, { status: 400 })
+            return NextResponse.json({ message: "Tous les champs sont obligatoires.", success: false, error: true }, { status: 400 })
         }
 
         const existingUser = await User.findOne({email})
         if (existingUser) {
-            return NextResponse.json({ message: "Cet email est déjà utilisé." }, { status: 400 });
+            return NextResponse.json({ message: "Cet email est déjà utilisé.", success: false, error: true }, { status: 400 });
         }
         
         const salt = await bcrypt.genSalt(10)
@@ -28,12 +28,12 @@ export const POST = async (req) => {
         })
 
         return NextResponse.json(
-            {message:"Utilisateur créé avec succès", newUser},
+            {message:"Utilisateur créé avec succès", newUser, success: true, error: false},
             { status: 201 }
         )
 
     } catch (error) {
         console.error("Erreur pendant la création de l'utilisateur: ", error)
-        return NextResponse.json({ message: "Erreur! Veuillez réessayer." }, { status: 500 })
+        return NextResponse.json({ message: "Erreur! Veuillez réessayer.", success: false, error: true }, { status: 500 })
     }
 }
